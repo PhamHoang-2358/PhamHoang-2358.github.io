@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <link rel="icon" href="data:," />
+    <meta charset="UTF-8" />
+    <title>Task Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- ==== MUTE CONSOLE NOISE ==== -->
+    <script>
+      (function () {
+        function isNoise(s) {
+          if (!s) return false;
+          s = String(s);
+          return [
+            "listener indicated an asynchronous response",
+            "chrome-extension",
+            "#sec-projects:1",
+            "ResizeObserver loop",
+            "favicon.ico",
+          ].some((m) => s.includes(m));
+        }
+        const _error = console.error,
+          _warn = console.warn;
+        console.error = function (...args) {
+          if (isNoise(args.join(" "))) return;
+          _error.apply(console, args);
+        };
+        console.warn = function (...args) {
+          if (isNoise(args.join(" "))) return;
+          _warn.apply(console, args);
+        };
+      })();
+    </script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="task.css" />
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+  <body>
+    <div class="dashboard-wrapper">
+      <!-- ============ TOP MENU ============ -->
+      <nav class="top-menu">
+        <div class="brand">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>Task Manager</span>
+        </div>
+        <button class="menu-toggle" aria-label="Mở menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <ul class="menu-list">
+          <li>
+            <button id="homeBtn" class="menu-link home-btn">
+              <i class="fa-solid fa-house"></i> Trang chủ
+            </button>
+          </li>
+          <li>
+            <a href="#sec-calendar" class="menu-link active">
+              <i class="fa-regular fa-calendar"></i> Lịch
+            </a>
+          </li>
+          <li>
+            <a href="#sec-insight" class="menu-link">
+              <i class="fa-solid fa-chart-pie"></i> Trạng thái
+            </a>
+          </li>
+          <li>
+            <a href="#sec-filter" class="menu-link">
+              <i class="fa-solid fa-filter"></i> Bộ lọc
+            </a>
+          </li>
+          <li>
+            <a href="#sec-tasks" class="menu-link">
+              <i class="fa-regular fa-square-check"></i> Công việc
+            </a>
+          </li>
+          <li>
+            <a href="#sec-projects" class="menu-link">
+              <i class="fa-solid fa-diagram-project"></i> Dự án
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="task-dashboard">
+        <!-- ============ SIDEBAR ============ -->
+        <aside class="sidebar">
+          <section class="projects-section" id="sec-projects">
+            <h3>Projects</h3>
+            <ul id="projectList"></ul>
+            <form id="formAddProject" autocomplete="off">
+              <input
+                type="text"
+                id="inputProjectName"
+                placeholder="Thêm dự án..."
+              />
+              <button type="submit" title="Thêm dự án">
+                <i class="fas fa-plus"></i>
+              </button>
+            </form>
+          </section>
+
+          <hr class="sidebar-divider" />
+          <div id="currentProjectDisplay" class="current-project-label">
+            <span id="currentProjectName">--</span>
+          </div>
+
+          <section class="task-form">
+            <h3 class="form-title">
+              <i class="fas fa-plus-circle"></i> Thêm Task
+            </h3>
+            <form id="formTask" autocomplete="off">
+              <input
+                type="text"
+                id="inputTaskTitle"
+                placeholder="Tên công việc"
+              />
+              <input type="text" id="inputTaskContent" placeholder="Chi tiết" />
+              <select id="inputTaskStatus">
+                <option value="notstarted">Chưa bắt đầu</option>
+                <option value="inprogress">Đang thực hiện</option>
+                <option value="done">Hoàn thành</option>
+              </select>
+              <select id="inputTaskPriority">
+                <option value="low">Thấp</option>
+                <option value="medium" selected>Trung bình</option>
+                <option value="high">Cao</option>
+              </select>
+              <input type="date" id="inputTaskDeadline" />
+              <input
+                type="text"
+                id="inputTaskAssignee"
+                placeholder="Người phụ trách"
+              />
+              <input type="file" id="inputTaskImage" accept="image/*" />
+              <button type="submit">
+                <i class="fas fa-plus"></i> Thêm Task
+              </button>
+            </form>
+          </section>
+
+          <button id="logoutBtn" class="logout-bottom">
+            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+          </button>
+        </aside>
+
+        <!-- ============ MAIN CONTENT ============ -->
+        <main class="main-content">
+          <div class="top-row">
+            <section class="calendar-box card-box" id="sec-calendar">
+              <div class="calendar-header-row">
+                <h3 id="calendarMonthLabel">Lịch công việc</h3>
+                <button id="btnToday">Hôm nay</button>
+              </div>
+              <div id="unifiedCalendar" class="custom-calendar-grid"></div>
+              <h4 id="selectedDateLabel">
+                Công việc ngày <span>--/--/----</span>
+              </h4>
+              <ul id="taskOfDayList" class="task-of-day-list"></ul>
+            </section>
+
+            <!-- ======= BIỂU ĐỒ TRẠNG THÁI MỚI ======= -->
+            <div
+              id="statusInsight"
+              class="insight-card"
+              data-anchor="sec-insight"
+            >
+              <div class="status-header">
+                <div class="status-item item-new">
+                  <span class="dot"></span> Chưa bắt đầu: <b id="cNew">0</b>
+                  <div class="bar"><span id="barNew"></span></div>
+                </div>
+                <div class="status-item item-doing">
+                  <span class="dot"></span> Đang thực hiện: <b id="cDoing">0</b>
+                  <div class="bar"><span id="barDoing"></span></div>
+                </div>
+                <div class="status-item item-done">
+                  <span class="dot"></span> Hoàn thành: <b id="cDone">0</b>
+                  <div class="bar"><span id="barDone"></span></div>
+                </div>
+              </div>
+
+              <div class="ring-wrap">
+                <div class="ring" id="chartHoverLayer"></div>
+                <div class="ring-center">
+                  <div class="total" id="cTotal">0</div>
+                  <div class="sub">TỔNG</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-row">
+            <section class="filter-box" id="sec-filter">
+              <h3>Bộ lọc công việc</h3>
+              <input
+                type="text"
+                id="inputSearchTask"
+                placeholder="Tìm kiếm công việc..."
+              />
+              <select id="filterStatus">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="notstarted">Chưa bắt đầu</option>
+                <option value="inprogress">Đang thực hiện</option>
+                <option value="done">Hoàn thành</option>
+              </select>
+              <select id="filterPriority">
+                <option value="all">Tất cả ưu tiên</option>
+                <option value="high">Cao</option>
+                <option value="medium">Trung bình</option>
+                <option value="low">Thấp</option>
+              </select>
+              <input type="date" id="filterDeadline" />
+              <button id="clearFilterBtn">Xóa lọc</button>
+            </section>
+
+            <section class="task-list-box" id="sec-tasks">
+              <ul id="taskList"></ul>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Logic chính -->
+    <script src="task.js"></script>
+
+    <!-- JS nhỏ cho menu -->
+    <script>
+      document.getElementById("homeBtn")?.addEventListener("click", () => {
+        location.href = "../../../index.html";
+      });
+      const tm = document.querySelector(".top-menu");
+      tm?.querySelector(".menu-toggle")?.addEventListener("click", () => {
+        tm.classList.toggle("open");
+      });
+      const links = [
+        ...document.querySelectorAll('.top-menu .menu-link[href^="#"]'),
+      ];
+      const map = new Map(
+        links.map((a) => [a.getAttribute("href").slice(1), a])
+      );
+      const ids = [
+        "sec-calendar",
+        "sec-filter",
+        "sec-tasks",
+        "sec-projects",
+        "sec-insight",
+      ];
+      const obs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((en) => {
+            if (en.isIntersecting) {
+              links.forEach((l) => l.classList.remove("active"));
+              const id = en.target.id || en.target.dataset.anchor;
+              map.get(id)?.classList.add("active");
+            }
+          });
+        },
+        { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
+      );
+      ids.forEach((id) => {
+        const el =
+          document.getElementById(id) ||
+          document.querySelector(`[data-anchor="${id}"]`);
+        if (el) obs.observe(el);
+      });
+      links.forEach((a) =>
+        a.addEventListener("click", () => tm?.classList.remove("open"))
+      );
+    </script>
+  </body>
+</html>

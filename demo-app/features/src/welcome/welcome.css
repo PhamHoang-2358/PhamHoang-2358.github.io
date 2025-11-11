@@ -1,0 +1,109 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #226db8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.welcome-container {
+  background: white;
+  padding: 40px 50px;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.welcome-container h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.welcome-container p {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.btn {
+  text-decoration: none;
+  background-color: #007bff;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.3s;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid #007bff;
+  color: #007bff;
+}
+
+.btn-outline:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+/* ===== WELCOME BANNER ===== */
+.welcome-banner {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff;
+  text-align: center;
+  padding: 50px 20px;
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.welcome-banner .container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.welcome-banner h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.welcome-banner p {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  opacity: 0.95;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .welcome-banner {
+    padding: 30px 15px;
+  }
+  .welcome-banner h2 {
+    font-size: 22px;
+  }
+  .welcome-banner p {
+    font-size: 14px;
+  }
+}
+#sideMenu {
+  transition: transform 0.3s ease;
+}
+#sideMenu.hide {
+  transform: translateX(-100%);
+}
