@@ -303,14 +303,19 @@
               placeholder="Email hoặc ID"
               required
           /></label>
-          <label
-            ><input
-              type="password"
-              id="loginPassword"
-              placeholder="Mật khẩu"
-              minlength="6"
-              required
-          /></label>
+          <label>
+            <div class="pw-wrap">
+              <input
+                type="password"
+                id="loginPassword"
+                placeholder="Mật khẩu"
+                minlength="6"
+                required
+              />
+              <span class="pw-toggle" data-target="loginPassword">👁</span>
+            </div>
+          </label>
+
           <label class="remember-me"
             ><input type="checkbox" id="rememberMe" /> Nhớ tài khoản</label
           >
@@ -344,24 +349,34 @@
               minlength="3"
               autocomplete="username"
           /></label>
-          <label
-            ><input
-              type="password"
-              id="regPassword"
-              placeholder="Ít nhất 6 ký tự"
-              required
-              minlength="6"
-              autocomplete="new-password"
-          /></label>
-          <label
-            ><input
-              type="password"
-              id="regPassword2"
-              placeholder="Nhập lại mật khẩu"
-              required
-              minlength="6"
-              autocomplete="new-password"
-          /></label>
+          <label>
+            <div class="pw-wrap">
+              <input
+                type="password"
+                id="regPassword"
+                placeholder="Ít nhất 6 ký tự"
+                required
+                minlength="6"
+                autocomplete="new-password"
+              />
+              <span class="pw-toggle" data-target="regPassword">👁</span>
+            </div>
+          </label>
+
+          <label>
+            <div class="pw-wrap">
+              <input
+                type="password"
+                id="regPassword2"
+                placeholder="Nhập lại mật khẩu"
+                required
+                minlength="6"
+                autocomplete="new-password"
+              />
+              <span class="pw-toggle" data-target="regPassword2">👁</span>
+            </div>
+          </label>
+
           <label
             ><input
               type="text"
@@ -396,6 +411,6 @@
       </div>
     </div>
 
-    <script src="scripts/dashboard-home.js"></script>
+    <script deferm src="scripts/dashboard-home.js"></script>
   </body>
 </html>
